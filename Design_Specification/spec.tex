@@ -1,0 +1,613 @@
+\documentclass[12pt]{article}
+
+\usepackage{graphicx}
+\usepackage{paralist}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{hhline}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{url}
+\usepackage{hyperref}
+\oddsidemargin 0mm
+\evensidemargin 0mm
+\textwidth 160mm
+\textheight 200mm
+
+\renewcommand\baselinestretch{1.0}
+
+\pagestyle {plain}
+\pagenumbering{arabic}
+
+\newcounter{stepnum}
+
+%% Comments
+
+\usepackage{color}
+
+\newif\ifcomments\commentstrue
+
+\ifcomments
+\newcommand{\authornote}[3]{\textcolor{#1}{[#3 ---#2]}}
+\newcommand{\todo}[1]{\textcolor{red}{[TODO: #1]}}
+\else
+\newcommand{\authornote}[3]{}
+\newcommand{\todo}[1]{}
+\fi
+
+\newcommand{\wss}[1]{\authornote{blue}{SS}{#1}}
+
+\title{Assignment 4, 2048 Game Design}
+\author{Tingyu Shi - shit19}
+\date{2021 - 04 - 12}
+
+\begin{document}
+
+\maketitle
+
+This MIS contains the specific information of modules for the 
+implementation of game 2048. To make this game more 
+general, the user can decide the size of the board at the 
+beginning of the game. The following are the rules of the game:\\
+The goal of this game is to combine numbered tiles to gain higher
+numbered tiles. Two numbered tiles can only be combined or merged
+when two numbers are the same. The result of combining two same 
+numbered tiles is the sum of these two numbers. During the game,
+there are only four movements, which are left, right, up and down.
+When the player chooses a direction to move, all the numbered tiles
+will move at the same time. If the game board changes after a move,
+a random number will pop up in the game board.\\
+
+An on-line version of 2048 can be found at:
+\begin{center}
+\href {https://play2048.co/} {https://play2048.co/}
+\end{center}
+
+\section{Likely changes}
+\begin{enumerate}
+\item The size of the board may change
+\item The printed message on screen may change
+\item The data structure to store the game board may change
+\item The random numbers showed in the game board after a move may change
+\end{enumerate}
+\section{Overview of the design}
+To design this game, MVC(Model View Control) design pattern is used.
+The following are specific information of each part:
+\begin{itemize}
+\item Model\\
+The model of 2048 game is obviously the game board. This 
+corresponds to the \verb|BoardT| class in the implementation. This 
+class is responsible for storing  data and states of a game board.
+The data is the numbered tiles of in the game board. The states 
+include the score of the current game and the size of the game board.
+The data structure to store the game board is a 2D array. Also, in this class, there are methods to perform different move
+operations, determine if the game has failed.etc. For detailed 
+information, please check MIS of \verb|BoardT|.
+\item View\\
+View unit corresponds to \verb|DisplayGame| code file. The role of 
+this module is  to display the game board and some other messages to 
+players. Other messages include game instructions, welcoming message,
+ending messages.etc.
+\item Control\\
+The Control unit corresponds to \verb|GameControl| of the code file.
+This is a link between model and view. Also, it handles user's inputs
+to modify the game board and select view correspondingly. 
+\item Another java class is \verb|MoveDirection|, this class is
+implemented as enum class, it contains all the movement options of
+game 2048.
+\end{itemize}
+
+\newpage
+
+\section{MIS of each Module}
+
+%%%%%%%%%MoveDirection Module%%%%%%%%%%%%%%%%
+\section* {MoveDirection Module}
+\subsection*{Module}
+MoveDirection\\
+\subsection* {Uses}
+None
+\subsection* {Syntax}
+\subsubsection* {Exported Constants}
+None
+\subsubsection* {Exported Types}
+MoveDirection = \{\\
+    LEFT, \textit{\#Move all the numbered tiles left}\\
+    RIGHT, \textit{\#Move all the numbered tiles right}\\
+    UP, \textit{\#Move all the numbered tiles up}\\
+    DOWN, \textit{\#Move all the numbered tiles down}\\
+\}
+\subsubsection* {Exported Access Programs}
+None
+\subsection* {Semantics}
+\subsubsection* {State Variables}
+None
+\subsubsection* {State Invariant}
+None
+\subsubsection* {Assumptions}
+None
+\newpage
+
+
+
+
+%%%%%%%%%%%%%%%%%%BoardT module
+\section* {Game Board Module}
+
+\subsection*{Template Module}
+
+BoardT\\
+
+\subsection* {Uses}
+
+MoveDirection
+
+\subsection* {Syntax}
+
+\subsubsection* {Exported Constants}
+
+None
+
+\subsubsection* {Exported Types}
+
+BoardT = ?
+
+\subsubsection* {Exported Access Programs}
+
+\begin{tabular}{| l | l | l | p{5cm} |}
+  \hline
+  \textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
+  \hline
+  new BoardT & $\mathbb{N}$ & BoardT & IllegalArgumentException \\
+  \hline
+  move & MoveDirection & $\mathbb{B}$ & ~\\
+  \hline
+  put\_one\_random\_number & $\mathbb{N}$ &  & ~\\
+  \hline
+  is\_end & & $\mathbb{B}$ & ~\\
+  \hline
+  set\_board & $\mathbb{N}$, $\mathbb{N}$, $\mathbb{N}$ & & IllegalArgumentException\\
+  \hline
+  has\_empty\_cell &  & $\mathbb{B}$ & ~\\
+  \hline
+  get\_score &  & $\mathbb{N}$ & ~\\
+  \hline
+  get\_board &  & seq of (seq of $\mathbb{N}$) &~\\
+  \hline
+  get\_size &&$\mathbb{N}$& ~\\
+  \hline
+  equals &seq of (seq of $\mathbb{N}$)&$\mathbb{B}$&IllegalArgumentException\\
+  \hline
+    
+\end{tabular}
+
+\subsection* {Semantics}
+
+\subsubsection* {State Variables}
+
+$\mathit{size}: \mathbb{N}$\\
+$\mathit{score}: \mathbb{N}$\\
+$\mathit{board}$: seq[$\mathit{size}$] of (seq[$\mathit{size}$] of $\mathbb{N}$) \\ \textit{\# This is a 2D array to store all the data of the game board, the game board is a square board}
+
+\subsubsection* {State Invariant}
+
+None
+
+\subsubsection* {Access Routine Semantics}
+
+\noindent new BoardT($\mathit{board\_size}$):
+\begin{itemize}
+\item transition:\\
+$\mathit{size} := \mathit{board\_size}$\\
+$\mathit{score} := 0$\\
+$\mathit{board}$ $:=$ 
+      $\langle \begin{array}{c}
+      \langle \mbox{0}_{00}, \mbox{0}_{01} ... ... ,\mbox{0}_{0(\mathit{size} - 2)}, \mbox{0}_{0(\mathit{size} - 1)} \rangle\\
+      
+      \langle \mbox{0}_{10}, \mbox{0}_{11} ... ... ,\mbox{0}_{1(\mathit{size} - 2)}, \mbox{0}_{1(\mathit{size} - 1)} \rangle\\
+      
+      \langle \mbox{0}_{20}, \mbox{0}_{21} ... ... ,\mbox{0}_{2(\mathit{size} - 2)}, \mbox{0}_{2(\mathit{size} - 1)} \rangle\\
+      
+      
+      ...\\
+      ...\\
+      
+      \langle \mbox{0}_{(\mathit{size} - 3)0}, \mbox{0}_{(\mathit{size} - 3)1} ... ... ,\mbox{0}_{(\mathit{size} - 3)(\mathit{size} - 2)}, \mbox{0}_{(\mathit{size} - 3)(\mathit{size} - 1)} \rangle\\
+      
+      
+      \langle \mbox{0}_{(\mathit{size} - 2)0}, \mbox{0}_{(\mathit{size} - 2)1} ... ... ,\mbox{0}_{(\mathit{size} - 2)(\mathit{size} - 2)}, \mbox{0}_{(\mathit{size} - 2)(\mathit{size} - 1)} \rangle\\
+      
+      
+      \langle \mbox{0}_{(\mathit{size} - 1)0}, \mbox{0}_{(\mathit{size} - 1)1} ... ... ,\mbox{0}_{(\mathit{size} - 1)(\mathit{size} - 2)}, \mbox{0}_{(\mathit{size} - 1)(\mathit{size} - 1)} \rangle\\
+      
+      
+      \end{array} \rangle$ \\ 
+
+\textit{\#$\mathit{board}$ is a 2D array which has $\mathit{size}$ rows
+and for each row, it has $\mathit{size}$ 0s. The subscript in the above graph is the index number of each 0.}
+
+\item output: $out := \mbox{self}$
+\item exception: exc := $((\mathit{board\_size} < 0 \lor \mathit{board\_size} = 0) \Rightarrow \text{IllegalArgumentException})$
+\end{itemize}
+
+%%%%%%%%%not finished
+\noindent move($\mathit{dir}$):
+\begin{itemize}
+\item transition: transition will be made during the process of  calculating the output
+\item output: $(dir = MoveDirection.LEFT \Rightarrow (move\_left(\mathit{board}))  | \\  dir = MoveDirection.RIGHT \Rightarrow (move\_right(\mathit{board})) |\\ dir = MoveDirection.UP \Rightarrow (move\_up(\mathit{board}))| \\dir = MoveDirection.DOWN \Rightarrow (move\_down(\mathit{board})))$\\
+\textit{\#At the same time of calculating the output, the state of 
+of the game board is changed}
+\item exception: None\\
+\end{itemize}
+
+\newpage
+\noindent put\_one\_random\_number($\mathit{value}$):
+\begin{itemize}
+\item transition: $\mathit{board}[i][j] := value$\\
+\textit{\#Assum we have the function random() to generate a number between 0 and 1}.
+Where
+$$\langle i, j \rangle := \mathit{emptyPos}[\lfloor random()*|emptyPos| - 1 \rfloor]$$
+$$\mathit{emptyPos} := \{\forall i, j : \mathbb{N} | i \in [0..\mathit{size}-1] \land j \in [0..\mathit{size}-1] \land \mathit{board}[i][j] = 0 : \langle i, j \rangle\}$$\\
+\textit{\#emptyPos here is a set of pairs (i, j) such that board[i][j] = 0. Then we just random choose a pair and assign value to board[i][j].}
+\item output: none
+\item exception: none
+\end{itemize}
+
+%%%%%%%%not finished
+\noindent is\_end():
+\begin{itemize}
+\item transition: none
+\item output: $\mathit{out} := \lnot (\mathit{move}(MoveDirection.LEFT) \lor \mathit{move}(MoveDirection.RIGHT) \lor \mathit{move}(MoveDirection.UP) \lor \mathit{move}(MoveDirection.DOWN)) $\\
+\textit{\#If the game board can move left, right, up, or down, then game is not end.}
+\item exception: none
+\end{itemize}
+
+
+\noindent set\_board($\mathit{x}$, $\mathit{y}$, $\mathit{value}$):
+\textit{\#This method is just used for testing.}
+\begin{itemize}
+\item transition:
+$\mathit{board}[x][y] := value$
+\item output: none
+\item exception: exc := (($\mathit{x} < 0$ $\lor$ $\mathit{y} < 0$ $\lor$ $\mathit{x} \geq \mathit{size}$ $\lor$ $\mathit{y} \geq \mathit{size}$) $\Rightarrow$ \text{IllegalArgumentException})
+\end{itemize}
+
+\noindent has\_empty\_cell():
+\begin{itemize}
+\item transition: none
+\item output: 
+ $$out := \exists(i, j: \mathbb{N} | i \in [0..\mathit{size}-1] \land j \in [0..\mathit{size}-1] : \mathit{board}[i][j] = 0)$$\textit{\#Used to tell if board has 0}
+\item exception: none
+\end{itemize}
+
+\noindent get\_score():
+\begin{itemize}
+\item transition: none
+\item output: $\mathit{out} := \mathit{score}$
+\item exception: none
+\end{itemize}
+
+\noindent get\_board():
+\begin{itemize}
+\item transition: none
+\item output: $\mathit{out} := \mathit{board}$
+\item exception: exc := none
+\end{itemize}
+
+\noindent get\_size():
+\begin{itemize}
+\item transition: none
+\item output: $\mathit{out} := \mathit{size}$
+\item exception: none
+\end{itemize}
+
+\noindent equals($\mathit{arr}$):
+\textit{\#This method is just used for testing.}
+\begin{itemize}
+\item transition: none
+\item output:$\mathit{out} := \lnot \exists (i, j : \mathbb{N} | i \in [0..\mathit{size}-1] \land j \in [0..\mathit{size}-1] : \mathit{board}[i][j] \neq \mathit{arr}[i][j])$
+\item exception: $exc := ( \lnot (|arr| = \mathit{size}) \lor \lnot(|arr[0]| = \mathit{size})) \Rightarrow IllegalArgumentException$
+\end{itemize}
+
+\newpage
+\subsection*{Local Functions}
+\noindent \textit{\#For the following local functions, operational descriptions will be used since it is hard to express in mathematical expression.}\\
+\noindent $\mbox{move\_left} : \text{seq} [\mathit{size}] \text{ of } (\text{seq} [\mathit{size}] \text{ of } \mathbb{N}) \rightarrow \mathbb{B}$\\ The following are steps:
+\begin{enumerate}
+\item For each row, merge and sum up two adjacent positive numbers if they are the
+same. A number will always try to merge the number at the left side 
+of it if the above condition is met. Also, if a number is produced 
+by the above merging, it will not merge with other numbers again.
+\item After merging, for each row, moving all the positive numbers
+toward left. The order between these positive numbers must not change.
+\item After the above two steps, compare the current 2D array with
+the input 2D array, if they are the same, return true, otherwise 
+return false.
+\end{enumerate}
+
+\noindent $\mbox{move\_right} : \text{seq} [\mathit{size}] \text{ of } (\text{seq} [\mathit{size}] \text{ of } \mathbb{N}) \rightarrow \mathbb{B}$\\ It is the same as $\mbox{move\_left}$ except in step2, 
+moving all the positive numbers toward right.\\
+
+\noindent $\mbox{move\_up} : \text{seq} [\mathit{size}] \text{ of } (\text{seq} [\mathit{size}] \text{ of } \mathbb{N}) \rightarrow \mathbb{B}$\\ The following are steps:
+\begin{enumerate}
+\item For each column, merge and sum up two adjacent positive numbers if they are the
+same. A number will always try to merge the number at the top of it if the above condition is met. Also, if a number is produced 
+by the above merging, it will not merge with other numbers again.
+\item After merging, for each column, moving all the positive numbers
+up. The order between these positive numbers must not change.
+\item After the above two steps, compare the current 2D array with
+the input 2D array, if they are the same, return true, otherwise 
+return false.
+\end{enumerate}
+
+
+\noindent $\mbox{move\_down} : \text{seq} [\mathit{size}] \text{ of } (\text{seq} [\mathit{size}] \text{ of } \mathbb{N}) \rightarrow \mathbb{B}$\\ It is the same as $\mbox{move\_up}$ except in step 2, 
+moving all the positive numbers down.\\
+\newpage
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%DisplayGame module
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section* {DisplayGame Module}
+
+\subsection* {DisplayGame Module}
+
+\subsection* {Uses}
+
+None
+
+\subsection* {Syntax}
+
+\subsubsection* {Exported Types}
+
+None
+
+\subsubsection* {Exported Constants}
+
+None
+
+\subsubsection* {Exported Access Programs}
+
+\begin{tabular}{| l | l | l | p{6cm} |}
+\hline
+\textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
+\hline
+print\_board & BoardT &  &  \\
+\hline
+print\_game\_start & ~ & ~ & \\
+\hline
+print\_game\_instruction & ~ & ~ & \\
+\hline
+print\_game\_ending& ~ & ~ & \\
+\hline
+print\_invlid\_command & ~ & ~ & \\
+\hline
+print\_game\_fail & ~ & ~ & \\
+\hline
+print\_wrong\_size\_input & ~ & ~ & \\
+\hline
+\end{tabular}
+
+\subsection* {Semantics}
+
+\subsection*{Environment Variables}
+
+window: A portion of computer screen to display the game and messages
+
+\subsubsection* {State Variables}
+
+None
+
+\subsubsection* {State Invariant}
+
+None
+
+\subsubsection* {Access Routine Semantics}
+
+\noindent print\_board($\mathit{board}$):
+\begin{itemize}
+\item transition: window := Draws the game board onto the screen.
+Each elements in the board is accessed by using \verb|get_board| 
+method defined in \verb|BoardT| class. Assume the size of the board 
+is s, then the first row is from $\mathit{board}$[0][0] to $\mathit{board}$[0][s - 1], the second row will be from $\mathit{board}$[1][0] to $\mathit{board}$[1][s - 1]. Follow this
+pattern, the last row will be from $\mathit{board}$[s - 1][0] to $\mathit{board}$[s - 1][s - 1].
+\end{itemize}
+
+\noindent print\_game\_start():
+\begin{itemize}
+\item transition: window $:=$ Displays a welcome message when the user starts the game.
+\item output: none
+\item exception: none
+\end{itemize}
+
+\noindent print\_game\_instructions():
+\begin{itemize}
+\item transition: window := After game starts, this will print game
+instructions onto the screen. Instruction include how to control different
+movements and how to exit the game. Also, the window shows a message
+to ask the player which movement he/she wants to play and whether 
+he/she wants to exit the game.
+\item output: none
+\item exception: none
+\end{itemize}
+
+\noindent print\_game\_ending():
+\begin{itemize}
+\item transition: window $:=$ If the player chooses to exit the game,
+just print an ending message.
+\item output: none
+\item exception: none
+\end{itemize}
+
+\noindent print\_invalid\_command():
+\begin{itemize}
+\item transition: window $:=$ Remind the user that the input
+ command is 
+invalid and shows a message to tell the user to enter a new command.
+\item output: none
+\item exception: none
+\end{itemize}
+
+\noindent print\_game\_fail():
+\begin{itemize}
+\item transition: window := Print a message when the game fails, 
+which means no more moves can be made.
+\item output: none
+\item exception: none
+\end{itemize}
+
+\noindent print\_wrong\_size\_input():
+\begin{itemize}
+\item transition: window := Print a message if the user enters an
+invalid board size. For example, 0 or negative numbers. Also, window
+shows a message to tell the user to enter a new number again.
+\item output: none
+\item exception: none
+\end{itemize}
+
+\newpage
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Game control module
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section* {GameControl Module}
+\textit{\#This part of specification
+is operational}
+
+\subsection* {GameControl Module}
+
+\subsection* {Uses}
+
+BoardT, DisplayGame
+
+\subsection* {Syntax}
+
+\subsubsection* {Exported Types}
+
+None
+
+\subsubsection* {Exported Constants}
+
+None
+
+\subsubsection* {Exported Access Programs}
+
+\begin{tabular}{| l | l | l | p{4.7cm} |}
+\hline
+\textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
+\hline
+initialize\_game & ~ & BoardT & ~ \\
+\hline
+run\_game & BoardT & ~ & ~\\
+\hline
+main & ~ & ~ & ~ \\
+\hline
+\end{tabular}
+
+\subsection* {Semantics}
+
+\subsection*{Environment Variables}
+
+keyboard: Scanner(System.in) \qquad \textit{// reading inputs from players via keyboards}
+
+\subsubsection* {State Variables}
+
+None
+\subsubsection* {State Invariant}
+
+None
+
+\subsubsection* {Access Routine Semantics}
+
+initialize\_game():
+\begin{itemize}
+  \item transition: operational method for initializing the game.
+  \begin{enumerate}
+  \item Print the welcome message.
+  \item Asking the player to enter the board size he/she wants to use and then receive the board size from the keyboard.
+  \item Create an object of BoardT with the size received 
+  from step 2.
+  \item Put 2 numbers(2 and 2 or 2 and 4) into two randomly chosen 
+  positions on the board.
+  \item Display the board onto the screen.
+  \item Return the board created from step 3.
+  \end{enumerate}
+  \item output: out := The BoardT object created from step 3 above.
+  \item exception: None
+\end{itemize}
+
+\noindent run\_game(board):
+\begin{itemize}
+  \item transition: operational method for running the game.\\ After
+  printing the initialized game board onto the screen, the game will
+  display the instruction and ask the user to make a move or exit the
+  game. If the player chooses to make a move, then the game will
+  display the game board after that move. If the player chooses to
+  exit the game, the game will end by displaying the ending message.
+  The game will continue as above until no more moves can be made.
+  \item output: None
+  \item exception: None
+\end{itemize}
+
+\noindent main(): \textit{\#This is the main function. The driver of the whole game}
+\begin{itemize}
+  \item transition: operational method for running the game.
+  \begin{enumerate}
+  \item BoardT model = initialize\_game(); \textit{ //Initialize the game}
+  \item run\_game(model); \textit{ // run game}
+  \end{enumerate}
+  \item output: None
+  \item exception: None
+\end{itemize}
+\newpage
+
+\section{Critique of Design}
+\begin{itemize}
+\item Consistency\\
+The consistency of this design is met. This includes naming
+conventions and ordering of parameters and exception handling. 
+\item Essentiality\\
+There are two methods from \verb|BoardT| class are not essential, 
+which are \verb|set_board| and \verb|equals|. These two methods are
+not essential for implementing the game, however, they are  useful for testing
+the model, therefore, they can be deleted after testing.
+\item Generality\\
+For a standard 2048 game, the game board is 4 $\times$ 4. However, 
+this design has improved the generality so that the player can set
+up a n $\times$ n board. Also, because of \verb|put_one_random_number| method from \verb|BoardT| class, we can put different random values after each move, not only 2 or 4. However,
+the generality can still be improved, the next improvement can be
+different shapes of the board, not only square board.
+\item Minimality\\
+The Minimality should be improved for \verb|move| method of class \verb|BoardT|. The reason is that \verb|move| provides two 
+independent services. First, it changes the state of the game board 
+according to the MoveDirection given. At the same time, it returns
+a boolean to tell if the board has changed before and after the move
+operation. The correct way of designing should be make a copy of 
+the current board and define another method to compare the board after
+the move and copy of the board before the move.
+\item Cohesion\\
+The cohesion of this design is achieved. The reason is that the design
+follows the structure of MVC. Each module except \verb|MoveDirection| just implements one of the units of MVC. As a consequence, the components within one module are highly related.
+\item Information Hiding\\
+All the state variables are private variables. However, since we need
+\verb|set_board| method for testing, the programmer can still change
+the state of game board from outside. Therefore, we need to come up with a better way for testing when there are random numbers. Also,
+it is a good practice to just remove this method after testing.
+\end{itemize}
+\newpage
+The following are some other points about this design:
+\begin{enumerate}
+\item  The view module are designed to be an abstract object just 
+like a service module, the reason is that different game can use the 
+same view module, therefore, there is not need to create an ADT.
+\item About the testing, all the exceptions are tested and different
+move operations are tested. However, for each move, it is better to
+include more testing cases.
+\end{enumerate}
+\end{document}
